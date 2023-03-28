@@ -35,7 +35,7 @@ async function compileHandler (params) {
   let { arc } = inventory.inv._project
   let { build, src } = lambda
   stage = stage || 'testing'
-  let arch = lambda.config.architecture === 'arm64' ? '--arm64' : ''
+  let arch = lambda.config.architecture === 'arm64' ? ' --arm64' : ''
 
   let command = `cargo build --target-dir ${build}`
   if (stage !== 'testing') {
@@ -56,11 +56,12 @@ async function compileHandler (params) {
   let args = minimist(process.argv.slice(2), { alias })
   let isVerbose = args.verbose || args.debug
 
-  // Run the build
   await rm(build, { recursive: true, force: true })
 
-  let cmdArgs = command.split(' ')
+  let cmdArgs = command.split(' ').filter(Boolean)
   let cmd = cmdArgs.shift()
+
+  // Run the build
   await new Promise((res, rej) => {
     let child = spawn(cmd, cmdArgs, {
       cwd: src,
