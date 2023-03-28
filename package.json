@@ -1,6 +1,6 @@
 {
   "name": "@architect/plugin-rust",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Rust runtime + workflow integration for Architect",
   "main": "src/index.js",
   "scripts": {
