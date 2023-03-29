@@ -1,16 +1,11 @@
-let { rmSync } = require('fs')
 let { rm } = require('fs/promises')
 let { spawn } = require('child_process')
 let minimist = require('minimist')
 
 async function compileProject ({ inventory }) {
   let { inv } = inventory
-  let { build } = inv._project
 
   let start = Date.now()
-  // It's ok to block Sandbox for this, we can't serve requests until it's done anyway
-  rmSync(build, { recursive: true, force: true })
-
   let ok = true
   console.log(`Compiling Rust`)
 
@@ -77,7 +72,13 @@ async function compileHandler (params) {
       if (isVerbose) process.stderr.write(data)
     })
     child.on('error', rej)
-    child.on('close', res)
+    child.on('close', code => {
+      if (code) {
+        console.log(buf.toString())
+        rej()
+      }
+      else res()
+    })
   })
 }
 
