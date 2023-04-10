@@ -1,4 +1,5 @@
-let { join } = require('path')
+let { join, parse } = require('path')
+let { execSync } = require('child_process')
 let {
   compileProject,
   compileHandler,
@@ -39,6 +40,33 @@ module.exports = {
         baseRuntime: 'provided.al2',
       }
     }
+  },
+  create: {
+    handlers: async (params) => {
+      let { pragma, src } = params.lambda
+      // `cargo lambda new` insists on creating its own directory, so work from its parent dir
+      let { dir: cwd, name } = parse(src)
+
+      let eventTypes = {
+        http: 'apigw_http',
+        ws: 'apigw_websockets',
+        events: 'sns::SnsEvent',
+        queues: 'sqs::SqsEvent',
+        scheduled: 'cloudwatch_events::CloudWatchEvent',
+        'tables-streams': 'dynamodb::Event',
+      }
+
+      let typeFlags = ' --event-type '
+      if ([ 'http', 'ws' ].includes(pragma)) {
+        typeFlags = ` --http --http-feature `
+      }
+
+      let cmd = `cargo lambda new` +           // Creates new Lambda
+              typeFlags + eventTypes[pragma] + // Flags + event types defined above
+              ` --bin-name bootstrap ` +       // Specifies 'bootstrap' as the output bin
+              ` --no-interactive ${name}`
+      execSync(cmd, { cwd })
+    },
   },
   deploy: {
     start: compileProject

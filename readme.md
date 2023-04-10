@@ -14,7 +14,11 @@
 
 ## Install
 
-Into your existing Architect project:
+This project assumes you have Rust (cargo, etc.) installed and working on your machine. If not, please see the [Rust installation instructions](https://www.rust-lang.org/tools/install).
+
+You will also need to have [`cargo-lambda`](https://www.cargo-lambda.info/) installed (see [installation instructions](https://www.cargo-lambda.info/guide/installation.html)).
+
+In your existing Architect project:
 
 ```sh
 npm i @architect/plugin-rust --save-dev
@@ -30,7 +34,7 @@ runtime rust # sets Rust as the the default runtime for your entire project
 architect/plugin-rust
 ```
 
-Or, if you'd prefer to add a single Rust Lambda to start, forego the above `runtime rust` setting in your project manifest, and add the following to a single Lambda:
+Or, if you'd prefer to add a single Rust Lambda to start, forego the above `runtime rust` setting in your project manifest, and add the following to a single `@http get /` Lambda:
 
 ```arc
 # src/http/get-index/config.arc
@@ -41,7 +45,9 @@ runtime rust
 
 ## Usage
 
-Now, simply author and port Lambdas in the `src` tree (with appropriate Cargo files). For example:
+Create new Lambdas by specifying them in your project manifest, then running `npx arc create` (which will run the appropriate `cargo lambda new ...` command.)
+
+Alternately, you can manually author (or port) Lambdas in the `src` tree (with appropriate Cargo files). For example:
 
 ```rust
 // src/http/get-index/src/main.rs
@@ -68,7 +74,7 @@ async fn function_handler(_event: Request) -> Result<Response<Body>, Error> {
 }
 ```
 
-The above function will be automatically compiled by Architect to `./.build/http/get-index/` with `cargo build` (for local development) and `cargo lambda build` (for final deployment to Lambda) commands. (The destination build directory is configurable, [see below](#configuration).)
+The above function will be automatically compiled by Architect to `./.build/http/get-index/` with `cargo build` (for local development) and `cargo lambda build --release` (for final deployment to Lambda) commands. (The destination build directory is configurable, [see below](#configuration).)
 
 When working locally, Sandbox automatically detects changes to your Rust handlers and re-compiles them for you.
 
