@@ -28,10 +28,9 @@ test('Start Sandbox (default project)', async t => {
 
 test('Handlers compiled', async t => {
   t.plan(3)
-  let result
-  result = await get({ url: url('ok') })
-  t.deepEqual(result.body, { ok: true }, 'Compiled handler returned correct body')
   try {
+    let result = await get({ url: url('ok') })
+    t.deepEqual(result.body, { ok: true }, 'Compiled handler returned correct body')
     result = await get({ url: url('fail') })
     t.fail('Expected an error')
   }
