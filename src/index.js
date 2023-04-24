@@ -37,7 +37,6 @@ module.exports = {
         type: 'compiled',
         build,
         buildSubpath,
-        baseRuntime: 'provided.al2',
       }
     }
   },
